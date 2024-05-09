@@ -28,11 +28,9 @@ def home():
 
 class Campers(Resource):
     def get(self):
-        campers = [camper.to_dict() for camper in Camper.query.all()]
-
+        campers = [camper.to_dict(rules = ('-signups',)) for camper in Camper.query.all()]
         if not campers:
             return {'errors' : '204: No content available'}, 204
-
         return make_response(
             campers,
             200
@@ -43,7 +41,7 @@ class CampersById(Resource):
         camper = Camper.query.filter(Camper.id == id).first()
         if camper:
             response = make_response(
-                camper.to_dict(),
+                jsonify(camper.to_dict()),
                 200
             )
         else:
