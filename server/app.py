@@ -19,11 +19,27 @@ app.json.compact = False
 migrate = Migrate(app, db)
 
 db.init_app(app)
-
+api = Api(app)
 
 @app.route('/')
 def home():
     return ''
+
+
+class Campers(Resource):
+    def get(self):
+        campers = [camper.to_dict() for camper in Camper.query.all()]
+
+        if not campers:
+            return {'errors' : '204: No content available'}, 204
+
+        return make_response(
+            campers,
+            200
+        )
+        
+api.add_resource(Campers, '/campers')
+
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
