@@ -37,9 +37,9 @@ class Campers(Resource):
             campers,
             200
         )
-        
+
 api.add_resource(Campers, '/campers')
 
 
 if __name__ == '__main__':
-    app.run(port=5555, debug=True)
+    app.run(port=8888, debug=True)

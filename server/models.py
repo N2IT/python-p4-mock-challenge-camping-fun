@@ -46,7 +46,7 @@ class Camper(db.Model, SerializerMixin):
     signups = db.relationship('Signup', back_populates = ('camper'))
     
     # Add serialization rules
-    serialize_rules = ('-signups.camper',)
+    serialize_rules = ('-signups',)
     
     # Add validation
     @validates('name')
