@@ -38,7 +38,21 @@ class Campers(Resource):
             200
         )
 
+class CampersById(Resource):
+    def get(self, id):
+        camper = Camper.query.filter(Camper.id == id).first()
+        if camper:
+            response = make_response(
+                camper.to_dict(),
+                200
+            )
+        else:
+            response = {'error' : 'Camper not found'}, 404
+
+        return response
+
 api.add_resource(Campers, '/campers')
+api.add_resource(CampersById, '/campers/<int:id>')
 
 
 if __name__ == '__main__':
