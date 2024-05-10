@@ -139,8 +139,6 @@ class Signups(Resource):
             if not 0 < form_data.get('time') < 23:
                 return {'errors' : ['validation errors']}, 400
 
-            
-
             new_signup = Signup(
                 time = form_data.get('time'),
                 camper_id = form_data.get('camper_id'),
