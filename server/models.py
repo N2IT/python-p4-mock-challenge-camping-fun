@@ -25,7 +25,6 @@ class Activity(db.Model, SerializerMixin):
     difficulty = db.Column(db.Integer)
 
     # Add relationship
-    # camper = db.relationship('Camper', secondary = 'signups', back_populates='activity', cascade = "all, delete")
     signups = db.relationship('Signup', back_populates = ('activity'))
     
     # Add serialization rules

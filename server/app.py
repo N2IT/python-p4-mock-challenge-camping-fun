@@ -90,8 +90,81 @@ class CampersById(Resource):
         else:
             return {"error" : '404: Camper not found'}, 404     
 
+
+class Activites(Resource):
+    def get(self):
+        activity = [activity.to_dict() for activity in Activity.query.all()]
+        if activity:
+            return make_response(
+                activity,
+                200
+            )
+
+        
+class ActivitiesById(Resource):
+    def get(self, id):
+        activity = Activity.query.filter(Activity.id == id).first()
+        if activity:
+            return make_response(
+                activity.to_dict(),
+                200
+            )
+        else:
+            return {'error' : 'Activity not found'}, 404
+
+    def delete(self, id):
+        activity = Activity.query.filter(Activity.id == id).first()
+        if activity:
+            db.session.delete(activity)
+            db.session.commit()
+            return {}, 204
+
+        else:
+            return {'error' : 'Activity not found'}, 404
+
+
+class Signups(Resource):
+    def get(self):
+        signup = [signup.to_dict() for signup in Signup.query.all()]
+        if signup:
+            return make_response(
+                signup,
+                200
+            )
+
+    def post(self):
+        form_data = request.get_json()
+        
+        if form_data:
+            if not 0 < form_data.get('time') < 23:
+                return {'errors' : ['validation errors']}, 400
+
+            
+
+            new_signup = Signup(
+                time = form_data.get('time'),
+                camper_id = form_data.get('camper_id'),
+                activity_id = form_data.get('activity_id')
+            )
+
+            db.session.add(new_signup)
+            db.session.commit()
+
+            return make_response(
+                new_signup.to_dict(),
+                201
+            )
+        
+        else:
+            return {'errors' : 'No form data entered'}, 400
+
+
+
 api.add_resource(Campers, '/campers')
 api.add_resource(CampersById, '/campers/<int:id>')
+api.add_resource(Activites, '/activities')
+api.add_resource(ActivitiesById, '/activities/<int:id>')
+api.add_resource(Signups, '/signups')
 
 
 if __name__ == '__main__':
