@@ -36,6 +36,30 @@ class Campers(Resource):
             200
         )
 
+    def post(self):
+        form_data = request.get_json() # check if this is deprecated and what to use instead
+        name = form_data.get('name')
+        age = form_data.get('age')
+        if name == "":
+            return {"errors" : "A name must be entered."}, 400
+        if not 8 <= age <= 18:
+            return {'errors' : 'Age must be between 8 and 18.'}, 400
+        if form_data:            
+            try:
+                new_camper = Camper(
+                    name = name,
+                    age = age
+                )
+                db.session.add(new_camper)
+                db.session.commit()
+                return make_response(
+                    new_camper.to_dict(),
+                    201
+                )
+            except ValueError:
+                return {'errors' : 'Validation errors'}, 400
+
+
 class CampersById(Resource):
     def get(self, id):
         camper = Camper.query.filter(Camper.id == id).first()
@@ -46,8 +70,25 @@ class CampersById(Resource):
             )
         else:
             response = {'error' : 'Camper not found'}, 404
-
         return response
+
+    def patch(self, id):
+        camper = Camper.query.filter(Camper.id == id).first()
+        form_data = request.get_json()
+        if form_data.get('name') == "":
+            return {"errors" : ['validation errors']}, 400
+        if not 8 <= form_data.get('age') <= 18:
+            return {'errors' : ['validation errors']}, 400
+        if camper:
+            for attr in form_data:
+                setattr(camper, attr, form_data.get(attr))
+            db.session.commit()
+            return make_response(
+                camper.to_dict(rules = ('-signups',)),
+                202
+            )
+        else:
+            return {"error" : '404: Camper not found'}, 404     
 
 api.add_resource(Campers, '/campers')
 api.add_resource(CampersById, '/campers/<int:id>')
