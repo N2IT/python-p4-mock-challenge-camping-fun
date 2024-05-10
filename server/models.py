@@ -50,7 +50,7 @@ class Camper(db.Model, SerializerMixin):
     # Add validation
     @validates('name')
     def validate_name(self, key, name):
-        if name == "":
+        if name == None or name == "":
             raise ValueError("A name must be entered.")
         return name
     
@@ -81,10 +81,14 @@ class Signup(db.Model, SerializerMixin):
     serialize_rules = ('-activity.signups', '-camper.signups',)
     
     # Add validation
-    @validates(time)
+    @validates("time")
     def validate_time(self, key, time):
-        if not 0 < time < 23:
+        if not isinstance(time, int):
+            raise ValueError('Time must be an integer')
+
+        elif not 0 <= time <= 23:
             raise ValueError('Time must be between 0 and 23.')
+
         return time
 
 
